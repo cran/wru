@@ -35,6 +35,7 @@
 #' \code{FALSE} in both). Similarly, the \code{\var{sex}} element in the object provided in 
 #' \code{\var{census.data}} must have the same value as the \code{\var{sex}} option here.
 #' If \code{\var{census.data}} is missing, Census geographic data will be obtained via Census API. 
+#' @param retry The number of retries at the census website if network interruption occurs.
 #' @return Output will be an object of class \code{data.frame}. It will 
 #'  consist of the original user-input data with additional columns of 
 #'  Census data.
@@ -46,7 +47,7 @@
 #' age = TRUE, sex = TRUE)}
 #'
 #' @export
-census_helper <- function(key, voter.file, states = "all", geo = "tract", age = FALSE, sex = FALSE, census.data = NA) {
+census_helper <- function(key, voter.file, states = "all", geo = "tract", age = FALSE, sex = FALSE, census.data = NA, retry = 0) {
   
   if (is.na(census.data) || (typeof(census.data) != "list")) {
     toDownload = TRUE
@@ -75,7 +76,7 @@ census_helper <- function(key, voter.file, states = "all", geo = "tract", age = 
     if (geo == "county") {
       geo.merge <- c("state", "county")
       if ((toDownload) || (is.null(census.data[[state]])) || (census.data[[state]]$age != age) || (census.data[[state]]$sex != sex)) {
-        census <- census_geo_api(key, state, geo = "county", age, sex)
+        census <- census_geo_api(key, state, geo = "county", age, sex, retry)
       } else {
         census <- census.data[[state]]$county
       }
@@ -84,7 +85,7 @@ census_helper <- function(key, voter.file, states = "all", geo = "tract", age = 
     if (geo == "tract") {
       geo.merge <- c("state", "county", "tract")
       if ((toDownload) || (is.null(census.data[[state]])) || (census.data[[state]]$age != age) || (census.data[[state]]$sex != sex)) {
-        census <- census_geo_api(key, state, geo = "tract", age, sex)
+        census <- census_geo_api(key, state, geo = "tract", age, sex, retry)
       } else {
         census <- census.data[[state]]$tract
       }
@@ -93,7 +94,7 @@ census_helper <- function(key, voter.file, states = "all", geo = "tract", age = 
     if (geo == "block") {
       geo.merge <- c("state", "county", "tract", "block")
       if ((toDownload) || (is.null(census.data[[state]])) || (census.data[[state]]$age != age) || (census.data[[state]]$sex != sex)) {
-        census <- census_geo_api(key, state, geo = "block", age, sex)
+        census <- census_geo_api(key, state, geo = "block", age, sex, retry)
       } else {
         census <- census.data[[state]]$block
       }
