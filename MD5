@@ -1,5 +1,5 @@
-2861e52e31170226c884714306c11cc3 *ChangeLog
-444f1a3784e238685c139c4d01d49a0d *DESCRIPTION
+a2fddc50cc961491ae709d1204926e13 *ChangeLog
+64d2af32907ba5d572e72e007628a5ac *DESCRIPTION
 935ff89cd94b0d8fdf3e6f7330787526 *NAMESPACE
 4b8a9ca3e63ec36195e389714c394037 *R/State.FIPS.R
 639964b704e1aecf5116c7feba3b3ad0 *R/census_geo_api.R
@@ -7,7 +7,7 @@
 81473911250892d7e4a6141d5853a7f2 *R/get_census_api.R
 7e372937d3f4e83a45081785353ad01b *R/get_census_api_2.R
 f11ae6c5a8dc107a58d1de63ad5c4d63 *R/get_census_data.R
-30094654fe0ae8ba732ad8fab94f3e42 *R/merge_surnames.R
+685877b29ef990c53937b299cf821f7e *R/merge_surnames.R
 585d514e63256c4c2f2ba1eedf315715 *R/pid.R
 1d5e03833a9ac9d01c994926f4887c40 *R/predict_race.R
 0e2710a5cc2ff350664b07b3219a8196 *R/surnames2000.R
@@ -26,7 +26,7 @@ fa204486844b6d2a9125b046ff33e4ad *man/census_helper.Rd
 dfb6d1d75bab43b4256d59685d4ca607 *man/get_census_api.Rd
 d69a6a869479f1d4b3f3414fb220beee *man/get_census_api_2.Rd
 3c859570985284acaab4b0e2e837d4fa *man/get_census_data.Rd
-398b25fbd7790a6dc76db89f1a4df6ee *man/merge_surnames.Rd
+9af935d8d0581680cc5de99545d8ea01 *man/merge_surnames.Rd
 834afc23d432976635b0008ce7379da9 *man/names.all.Rd
 4564aacc18cb5a81f8f95c5cb93f3d02 *man/pid.Rd
 5712ea562283d2be4c468cf7dfea88d8 *man/predict_race.Rd

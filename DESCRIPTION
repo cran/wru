@@ -1,6 +1,6 @@
 Package: wru
-Version: 0.1-3
-Date: 2017-4-10
+Version: 0.1-4
+Date: 2017-5-3
 Title: Who are You? Bayesian Prediction of Racial Category Using
         Surname and Geolocation
 Author: Kabir Khanna [aut, cre], Kosuke Imai [aut, cre], Hubert Jin [ctb]
@@ -21,6 +21,6 @@ LazyData: yes
 License: GPL (>= 3)
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2017-04-14 01:40:45 UTC; kabirkhanna
+Packaged: 2017-05-05 01:53:39 UTC; kabirkhanna
 Repository: CRAN
-Date/Publication: 2017-04-14 14:07:48 UTC
+Date/Publication: 2017-05-05 03:09:25 UTC
