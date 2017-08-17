@@ -17,10 +17,10 @@ If using geolocation in predictions, \code{\var{voter.file}} must contain a fiel
 state of residence (e.g., \code{"nj"} for New Jersey). 
 If using Census geographic data in race/ethnicity predictions, 
 \code{\var{voter.file}} must also contain at least one of the following fields: 
-\code{\var{county}}, \code{\var{tract}}, and/or \code{\var{block}}. 
+\code{\var{county}}, \code{\var{tract}}, \code{\var{block}}, and/or \code{\var{place}}. 
 These fields should contain character strings matching U.S. Census categories. 
 County is three characters (e.g., \code{"031"} not \code{"31"}), 
-tract is six characters, and block is four characters. 
+tract is six characters, and block is four characters. Place is five characters. 
 See below for other optional fields.}
 
 \item{census.surname}{A \code{TRUE}/\code{FALSE} object. If \code{TRUE}, 
@@ -42,7 +42,7 @@ The default value is \code{2010}, which means the surname statistics from the
 
 \item{census.geo}{An optional character vector specifying what level of 
 geography to use to merge in U.S. Census 2010 geographic data. Currently
-\code{"county"}, \code{"tract"}, or \code{"block"} are supported.
+\code{"county"}, \code{"tract"}, \code{"block"}, and \code{"place"} are supported.
 Note: sufficient information must be in user-defined \code{\var{voter.file}} object. 
 If \code{\var{census.geo} = "county"}, then \code{\var{voter.file}} 
 must have column named \code{county}.
@@ -50,6 +50,8 @@ If \code{\var{census.geo} = "tract"}, then \code{\var{voter.file}}
 must have columns named \code{county} and \code{tract}.
 And if \code{\var{census.geo} = "block"}, then \code{\var{voter.file}} 
 must have columns named \code{county}, \code{tract}, and \code{block}.
+If \code{\var{census.geo} = "place"}, then \code{\var{voter.file}} 
+must have column named \code{place}.
 Specifying \code{\var{census.geo}} will call \code{census_helper} function 
 to merge Census geographic data at specified level of geography.}
 
@@ -105,12 +107,13 @@ individual-level race/ethnicity, based on surname, geolocation, and party.
 data(voters)
 predict_race(voters, surname.only = TRUE)
 predict_race(voter.file = voters, surname.only = TRUE)
-\dontrun{predict_race(voter.file = voters, census.geo = "tract", census.key = "...", age = TRUE)}
-\dontrun{predict_race(voter.file = voters, census.geo = "tract", census.key = "...", 
-party = "PID")}
+\dontrun{predict_race(voter.file = voters, census.geo = "tract", census.key = "...")}
+\dontrun{predict_race(voter.file = voters, census.geo = "tract", census.key = "...", age = T)}
+\dontrun{predict_race(voter.file = voters, census.geo = "place", census.key = "...", sex = T)}
 \dontrun{CensusObj <- get_census_data("...", state = c("NY", "DC", "NJ")); 
 predict_race(voter.file = voters, census.geo = "tract", census.data = CensusObj, party = "PID")}
-\dontrun{CensusObj2 <- get_census_data("...", state = c("NY", "DC", "NJ"), age = TRUE, sex = TRUE); 
-predict_race(voter.file = voters, census.geo = "tract", census.data = CensusObj2, party = "PID", 
-age = TRUE, sex = TRUE)}
+\dontrun{CensusObj2 <- get_census_data(key = "...", state = c("NY", "DC", "NJ"), age = T, sex = T); 
+predict_race(voter.file = voters, census.geo = "tract", census.data = CensusObj2, age = T, sex = T)}
+\dontrun{CensusObj3 <- get_census_data(key = "...", state = c("NY", "DC", "NJ"), census.geo = "place");
+predict_race(voter.file = voters, census.geo = "place", census.data = CensusObj3)}
 }
