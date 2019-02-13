@@ -1,10 +1,12 @@
 Package: wru
-Version: 0.1-7
-Date: 2017-8-31
+Version: 0.1-8
+Date: 2019-2-12
 Title: Who are You? Bayesian Prediction of Racial Category Using
         Surname and Geolocation
-Author: Kabir Khanna [aut, cre], Kosuke Imai [aut, cre], Hubert Jin [ctb]
-Maintainer: Kabir Khanna <kkhanna@princeton.edu>
+Authors@R: c(
+  person("Kabir", "Khanna", email = "kabirkhanna@gmail.com", role = c("aut", "cre")),
+  person("Kosuke", "Imai", email = "imai@harvard.edu", role = c("aut"))
+  )
 Description: Predicts individual race/ethnicity using surname, geolocation,
     and other attributes, such as gender and age. The method utilizes the Bayes'
     Rule to compute the posterior probability of each racial category for any given
@@ -21,6 +23,9 @@ LazyData: yes
 License: GPL (>= 3)
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2017-09-01 03:04:17 UTC; kabirkhanna
+Packaged: 2019-02-13 00:23:15 UTC; kabirkhanna
+Author: Kabir Khanna [aut, cre],
+  Kosuke Imai [aut]
+Maintainer: Kabir Khanna <kabirkhanna@gmail.com>
 Repository: CRAN
-Date/Publication: 2017-09-01 08:03:35 UTC
+Date/Publication: 2019-02-13 08:40:03 UTC
