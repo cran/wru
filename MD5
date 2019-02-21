@@ -1,8 +1,8 @@
-5c916c041905acf53d4d26ca9e8ee8e2 *ChangeLog
-e818f1b306b92e7408cb6709ec52ea9d *DESCRIPTION
+c83397eeb2d9d8cdc9b774591f729f93 *ChangeLog
+346e970248ca18edc2af3c0a3acae6f0 *DESCRIPTION
 935ff89cd94b0d8fdf3e6f7330787526 *NAMESPACE
 0799cdef303db881e10fcd5e24cf348d *R/census_geo_api.R
-ccd6814f496df149acdbdc9deabed43c *R/census_helper.R
+b43ba3d00c422660de5f7fad317c018f *R/census_helper.R
 5e60ee0e240f837ec6567e114f1b005c *R/get_census_api.R
 4759e4b136510ca231b19b3b59b20127 *R/get_census_api_2.R
 0622528d37cc5c59535ab1efe412a310 *R/get_census_data.R
