@@ -1,5 +1,5 @@
 1b1af46e69723248e66b0de3073752f0 *ChangeLog
-aa71b84b6c0072891b8e2bcfa362fc0a *DESCRIPTION
+029a0b38f93bdc96c2dbb926a61755c3 *DESCRIPTION
 935ff89cd94b0d8fdf3e6f7330787526 *NAMESPACE
 0799cdef303db881e10fcd5e24cf348d *R/census_geo_api.R
 b43ba3d00c422660de5f7fad317c018f *R/census_helper.R
@@ -14,6 +14,7 @@ dddc9ff745495242f099db379574e310 *R/sysdata.rda
 cb5b1835372f577a42cdb412225162f1 *R/vec_to_chunk.R
 9340f1fe80d6a4d4157df72006ec946e *R/voters.R
 ad18f884be79df23c68f39c640988e10 *README.md
+3692c1d847d6a475bb9e0943d9299e14 *data/datalist
 25dff6714a2b94e749a32f93fdc3f59d *data/surnames2000.RData
 61bd9565c2a3984f9511ce98c3e70a8f *data/surnames2010.RData
 9e5443f48862ffa70ada63b041073650 *data/voters.RData
