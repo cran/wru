@@ -7,8 +7,9 @@
 merge_surnames(
   voter.file,
   surname.year = 2010,
-  clean.surname = T,
-  impute.missing = T
+  name.data,
+  clean.surname = TRUE,
+  impute.missing = TRUE
 )
 }
 \arguments{
@@ -18,6 +19,10 @@ named 'surname' containing list of surnames to be merged with Census lists.}
 \item{surname.year}{An object of class \code{numeric} indicating which year 
 Census Surname List is from. Accepted values are \code{2010} and \code{2000}. 
 Default is \code{2010}.}
+
+\item{name.data}{An object of class \code{data.frame}. Must contain a leading 
+column of surnames, and 5 subsequent columns, with Pr(Race | Surname) for each 
+of the five major racial categories.}
 
 \item{clean.surname}{A \code{TRUE}/\code{FALSE} object. If \code{TRUE}, 
 any surnames in \code{\var{voter.file}} that cannot initially be matched 
@@ -38,6 +43,7 @@ Output will be an object of class \code{data.frame}. It will
  \code{\var{p_his}} for Hispanic/Latino, 
  \code{\var{p_asi}} for Asian and Pacific Islander, and 
  \code{\var{p_oth}} for Other/Mixed).
+#'
 }
 \description{
 \code{merge_surnames} merges surnames in user-input dataset with corresponding 
@@ -66,6 +72,7 @@ This function allows users to match surnames in their dataset with the U.S.
 }
 \examples{
 data(voters)
-merge_surnames(voters)
+\dontrun{try(merge_surnames(voters))}
 
 }
+\keyword{internal}

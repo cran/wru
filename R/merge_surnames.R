@@ -28,6 +28,9 @@
 #' @param surname.year An object of class \code{numeric} indicating which year 
 #'  Census Surname List is from. Accepted values are \code{2010} and \code{2000}. 
 #'  Default is \code{2010}.
+#' @param name.data An object of class \code{data.frame}. Must contain a leading 
+#' column of surnames, and 5 subsequent columns, with Pr(Race | Surname) for each 
+#' of the five major racial categories.      
 #' @param clean.surname A \code{TRUE}/\code{FALSE} object. If \code{TRUE}, 
 #' any surnames in \code{\var{voter.file}} that cannot initially be matched 
 #' to surname lists will be cleaned, according to U.S. Census specifications, 
@@ -44,17 +47,16 @@
 #'  \code{\var{p_his}} for Hispanic/Latino, 
 #'  \code{\var{p_asi}} for Asian and Pacific Islander, and 
 #'  \code{\var{p_oth}} for Other/Mixed).
-#'
-#' @import devtools
-#'
+#'#'
 #' @examples
 #' data(voters)
-#' merge_surnames(voters)
+#' \dontrun{try(merge_surnames(voters))}
 #'
-#' @export
-merge_surnames <- function(voter.file, surname.year = 2010, clean.surname = T, impute.missing = T) {
+#' @keywords internal
 
-  if ("surname" %in% names(voter.file) == F) {
+merge_surnames <- function(voter.file, surname.year = 2010, name.data, clean.surname = TRUE, impute.missing = TRUE) {
+
+  if ("surname" %in% names(voter.file) == FALSE) {
     stop('Data does not contain surname field.')
   }
   
@@ -62,23 +64,26 @@ merge_surnames <- function(voter.file, surname.year = 2010, clean.surname = T, i
   if (surname.year == 2000) {
     surnames2000$surname <- as.character(surnames2000$surname)
     surnames <- surnames2000
-  } else {
+  } else if (surname.year == 2010) {
     surnames2010$surname <- as.character(surnames2010$surname)
     surnames <- surnames2010
+  } else {
+    surnames <- name.data
+    colnames(surnames) <- colnames(surnames2010)
+    surnames$surname <- as.character(surnames$surname)
   }
   
   p_eth <- c("p_whi", "p_bla", "p_his", "p_asi", "p_oth")
   
   ## Convert Surnames in Voter File to Upper Case 
   df <- voter.file
-  df$caseid <- 1:nrow(df)
   df$surname.match <- df$surname.upper <- toupper(as.character(df$surname))
 
   ## Merge Surnames with Census List (No Cleaning Yet)
-  df <- merge(df[names(df) %in% p_eth == F], surnames[c("surname", p_eth)], by.x = "surname.match", by.y = "surname", all.x = TRUE)
+  df <- merge(df[names(df) %in% p_eth == FALSE], surnames[c("surname", p_eth)], by.x = "surname.match", by.y = "surname", all.x = TRUE)
 
   if (nrow(df[df$surname.upper %in% surnames$surname == F, ]) == 0) {
-    return(df[order(df$caseid), c(names(voter.file), "surname.match", p_eth)])
+    return(df[, c(names(voter.file), "surname.match", p_eth)])
   }
 
   df[df$surname.upper %in% surnames$surname == F, ]$surname.match <- ""
@@ -91,7 +96,7 @@ merge_surnames <- function(voter.file, surname.year = 2010, clean.surname = T, i
     
     ## Remove All Punctuation and Try Merge Again
     df2$surname.match <- gsub("[^[:alnum:] ]", "", df2$surname.upper)
-    df2 <- merge(df2[names(df2) %in% p_eth == F], surnames[c("surname", p_eth)], by.x = "surname.match", by.y = "surname", all.x = TRUE)
+    df2 <- merge(df2[names(df2) %in% p_eth == FALSE], surnames[c("surname", p_eth)], by.x = "surname.match", by.y = "surname", all.x = TRUE)
     if (nrow(df2[df2$surname.match %in% surnames$surname, ]) > 0) {
       df1 <- rbind(df1, df2[df2$surname.match %in% surnames$surname, ])
       df2 <- df2[df2$surname.match %in% surnames$surname == F, ]
@@ -100,10 +105,10 @@ merge_surnames <- function(voter.file, surname.year = 2010, clean.surname = T, i
 
     ## Remove All Spaces and Try Merge Again
     df2$surname.match <- gsub(" ", "", df2$surname.match)
-    df2 <- merge(df2[names(df2) %in% p_eth == F], surnames[c("surname", p_eth)], by.x = "surname.match", by.y = "surname", all.x = TRUE)
+    df2 <- merge(df2[names(df2) %in% p_eth == FALSE], surnames[c("surname", p_eth)], by.x = "surname.match", by.y = "surname", all.x = TRUE)
     if (nrow(df2[df2$surname.match %in% surnames$surname, ]) > 0) {
       df1 <- rbind(df1, df2[df2$surname.match %in% surnames$surname, ])
-      df2 <- df2[df2$surname.match %in% surnames$surname == F, ]
+      df2 <- df2[df2$surname.match %in% surnames$surname == FALSE, ]
       if (nrow(df2[df2$surname.match %in% surnames$surname, ]) > 0) {df2$surname.match <- ""}
     }
 
@@ -119,19 +124,19 @@ merge_surnames <- function(voter.file, surname.year = 2010, clean.surname = T, i
                                        substr(df2$surname.match, 1, nchar(df2$surname.match) - 2), 
                                        df2$surname.match), 
                                 df2$surname.match) #Remove "SR" only if name has at least 7 characters
-    df2 <- merge(df2[names(df2) %in% p_eth == F], surnames[c("surname", p_eth)], by.x = "surname.match", by.y = "surname", all.x = TRUE)
+    df2 <- merge(df2[names(df2) %in% p_eth == FALSE], surnames[c("surname", p_eth)], by.x = "surname.match", by.y = "surname", all.x = TRUE)
     if (nrow(df2[df2$surname.match %in% surnames$surname, ]) > 0) {
       df1 <- rbind(df1, df2[df2$surname.match %in% surnames$surname, ])
-      df2 <- df2[df2$surname.match %in% surnames$surname == F, ]
+      df2 <- df2[df2$surname.match %in% surnames$surname == FALSE, ]
       if (nrow(df2[df2$surname.match %in% surnames$surname, ]) > 0) {df2$surname.match <- ""}
     }
 
     ## Names with Hyphens or Spaces, e.g. Double-Barreled Names
     df2$surname2 <- df2$surname1 <- NA
-    df2$surname1[grep("-", df2$surname.upper)] <- sapply(strsplit(grep("-", df2$surname.upper, value = T), "-"), "[", 1)
-    df2$surname2[grep("-", df2$surname.upper)] <- sapply(strsplit(grep("-", df2$surname.upper, value = T), "-"), "[", 2)  
-    df2$surname1[grep(" ", df2$surname.upper)] <- sapply(strsplit(grep(" ", df2$surname.upper, value = T), " "), "[", 1)
-    df2$surname2[grep(" ", df2$surname.upper)] <- sapply(strsplit(grep(" ", df2$surname.upper, value = T), " "), "[", 2)
+    df2$surname1[grep("-", df2$surname.upper)] <- sapply(strsplit(grep("-", df2$surname.upper, value = TRUE), "-"), "[", 1)
+    df2$surname2[grep("-", df2$surname.upper)] <- sapply(strsplit(grep("-", df2$surname.upper, value = TRUE), "-"), "[", 2)  
+    df2$surname1[grep(" ", df2$surname.upper)] <- sapply(strsplit(grep(" ", df2$surname.upper, value = TRUE), " "), "[", 1)
+    df2$surname2[grep(" ", df2$surname.upper)] <- sapply(strsplit(grep(" ", df2$surname.upper, value = TRUE), " "), "[", 2)
     
     ## Use first half of name to merge in priors
     df2$surname.match <- as.character(df2$surname1)
@@ -157,10 +162,10 @@ merge_surnames <- function(voter.file, surname.year = 2010, clean.surname = T, i
     if (nrow(df2) > 0) {
       df2$surname.match <- ""
       df2$p_whi <- .6665; df2$p_bla <- .0853; df2$p_his <- .1367; df2$p_asi <- .0797; df2$p_oth <- .0318
-      warning(paste("Probabilities were imputed for", nrow(df2), ifelse(nrow(df2) == 1, "surname", "surnames"), "that could not be matched to Census list."))
+      message(paste("Probabilities were imputed for", nrow(df2), ifelse(nrow(df2) == 1, "surname", "surnames"), "that could not be matched to Census list."))
     }
-  } else warning(paste(nrow(df2), ifelse(nrow(df2) == 1, "surname was", "surnames were"), "not matched."))
+  } else message(paste(nrow(df2), ifelse(nrow(df2) == 1, "surname was", "surnames were"), "not matched."))
   
   df <- rbind(df1, df2)
-  return(df[order(df$caseid), c(names(voter.file), "surname.match", p_eth)])
+  return(df[, c(names(voter.file), "surname.match", p_eth)])
 }

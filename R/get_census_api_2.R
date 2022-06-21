@@ -22,34 +22,36 @@
 #'  If unsuccessful, function prints the URL query that was constructed.
 #'
 #' @examples
-#' \dontrun{get_census_api_2(data_url = "https://api.census.gov/data/2010/dec/sf1?", key = "...", 
-#' get = c("P005003","P005004","P005005", "P005006"), region = "for=county:*&in=state:34")}
+#' \dontrun{try(get_census_api_2(data_url = "https://api.census.gov/data/2010/dec/sf1?", key = "...", 
+#' get = c("P005003","P005004","P005005", "P005006"), region = "for=county:*&in=state:34"))}
 #' 
 #' @references
 #' Based on code authored by Nicholas Nagle, which is available 
 #' \href{https://rstudio-pubs-static.s3.amazonaws.com/19337_2e7f827190514c569ea136db788ce850.html}{here}.
 #'
-#' @export
-get_census_api_2 <- function(data_url, key, get, region, retry = 0){
+#' @keywords internal
+get_census_api_2 <- function(data_url, key, get, region, retry = 3){
   if(length(get) > 1) {
     get <- paste(get, collapse=',', sep='')
   }
+  
   api_call <- paste(data_url, 'key=', key, '&get=', get, '&', region, sep='')
+  
   dat_raw <- try(readLines(api_call, warn="F"))
 
-  while ((class(dat_raw) == 'try-error') && (retry > 0)) {
-    print(paste("Try census server again:", data_url))
+  while (inherits(dat_raw, "try-error") && (retry > 0)) {
+    message(paste("Try census server again:", data_url))
     Sys.sleep(1)
     retry <- retry - 1
     dat_raw <- try(readLines(api_call, warn="F"))
   }
 
-  if(class(dat_raw) == 'try-error') {
-    print("Data access failure at the census website, please try again by re-run the previous command")
-    stop(print(api_call))
+  if (inherits(dat_raw, "try-error")) {
+    message("Data access failure at the census website, please try again by re-run the previous command")
+    stop(message(api_call))
     return()
   }
-  if (class(dat_raw) != 'try-error' & "TRUE" %in% names(table(grepl("Invalid Key", dat_raw)))) {
+  if (!inherits(dat_raw, "try-error") & "TRUE" %in% names(table(grepl("Invalid Key", dat_raw)))) {
     stop('Invalid Key: 
          A valid key must be included with each data API request. 
          You included a key with this request, however, it is not valid. 

@@ -4,7 +4,7 @@
 \alias{get_census_api_2}
 \title{Census API URL assembler.}
 \usage{
-get_census_api_2(data_url, key, get, region, retry = 0)
+get_census_api_2(data_url, key, get, region, retry = 3)
 }
 \arguments{
 \item{data_url}{URL root of the API, including the question mark, 
@@ -37,11 +37,12 @@ It is used by the \code{get_census_api} function. The user should not need to ca
 function directly.
 }
 \examples{
-\dontrun{get_census_api_2(data_url = "https://api.census.gov/data/2010/dec/sf1?", key = "...", 
-get = c("P005003","P005004","P005005", "P005006"), region = "for=county:*&in=state:34")}
+\dontrun{try(get_census_api_2(data_url = "https://api.census.gov/data/2010/dec/sf1?", key = "...", 
+get = c("P005003","P005004","P005005", "P005006"), region = "for=county:*&in=state:34"))}
 
 }
 \references{
 Based on code authored by Nicholas Nagle, which is available 
 \href{https://rstudio-pubs-static.s3.amazonaws.com/19337_2e7f827190514c569ea136db788ce850.html}{here}.
 }
+\keyword{internal}

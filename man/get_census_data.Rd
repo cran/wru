@@ -5,12 +5,14 @@
 \title{Multilevel Census data download function.}
 \usage{
 get_census_data(
-  key,
+  key = NULL,
   states,
   age = FALSE,
   sex = FALSE,
+  year = "2010",
   census.geo = "block",
-  retry = 0
+  retry = 3,
+  county.list = NULL
 )
 }
 \arguments{
@@ -29,17 +31,24 @@ sex or not. If \code{FALSE} (default), function will return Pr(Geolocation | Rac
 If \code{TRUE}, function will return Pr(Geolocation, Sex | Race). 
 If \code{\var{age}} is also \code{TRUE}, function will return Pr(Geolocation, Age, Sex | Race).}
 
+\item{year}{A character object specifying the year of U.S. Census data to be downloaded.
+Use \code{"2010"}, or \code{"2020"}. Default is \code{"2010"}.
+Warning: 2020 U.S. Census data is downloaded only when \code{\var{age}} and 
+\code{\var{sex}} are both \code{FALSE}.}
+
 \item{census.geo}{An optional character vector specifying what level of 
 geography to use to merge in U.S. Census 2010 geographic data. Currently
 \code{"county"}, \code{"tract"}, \code{"block"}, and \code{"place"} are supported.}
 
 \item{retry}{The number of retries at the census website if network interruption occurs.}
+
+\item{county.list}{A named list of character vectors of counties present in your \var{voter.file}, per state.}
 }
 \value{
 Output will be an object of class \code{list} indexed by state. 
 Output will contain a subset of the following elements: 
 \code{state}, \code{age}, \code{sex}, 
-\code{county}, \code{tract}, \code{block}, and \code{place}.
+\code{county}, \code{tract}, \code{block_group}, \code{block}, and \code{place}.
 }
 \description{
 \code{get_census_data} returns county-, tract-, and block-level Census data 
@@ -48,4 +57,5 @@ can save considerable time when running \code{predict_race} and \code{census_hel
 }
 \examples{
 \dontrun{get_census_data(key = "...", states = c("NJ", "NY"), age = TRUE, sex = FALSE)}
+\dontrun{get_census_data(key = "...", states = "MN", age = FALSE, sex = FALSE, year = "2020")}
 }

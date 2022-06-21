@@ -5,13 +5,15 @@
 \title{Census Data download function.}
 \usage{
 census_geo_api(
-  key,
+  key = NULL,
   state,
   geo = "tract",
   age = FALSE,
   sex = FALSE,
-  retry = 0,
-  save_temp = NULL
+  year = "2010",
+  retry = 3,
+  save_temp = NULL,
+  counties = NULL
 )
 }
 \arguments{
@@ -22,7 +24,7 @@ key, which can be requested \href{https://api.census.gov/data/key_signup.html}{h
 e.g., \code{"NJ"}.}
 
 \item{geo}{A character object specifying what aggregation level to use. 
-Use \code{"county"}, \code{"tract"}, \code{"block"}, or \code{"place"}. 
+Use \code{"county"}, \code{"tract"},\code{"block_group"}, \code{"block"}, or \code{"place"}. 
 Default is \code{"tract"}. Warning: extracting block-level data takes very long.}
 
 \item{age}{A \code{TRUE}/\code{FALSE} object indicating whether to condition on 
@@ -35,11 +37,19 @@ sex or not. If \code{FALSE} (default), function will return Pr(Geolocation | Rac
 If \code{TRUE}, function will return Pr(Geolocation, Sex | Race). 
 If \code{\var{age}} is also \code{TRUE}, function will return Pr(Geolocation, Age, Sex | Race).}
 
+\item{year}{A character object specifying the year of U.S. Census data to be downloaded.
+Use \code{"2010"}, or \code{"2020"}. Default is \code{"2010"}.
+Warning: 2020 U.S. Census data is downloaded only when \code{\var{age}} and 
+\code{\var{sex}} are both \code{FALSE}.}
+
 \item{retry}{The number of retries at the census website if network interruption occurs.}
 
 \item{save_temp}{File indicating where to save the temporary outputs. 
 Defaults to NULL. If specified, the function will look for an .RData file
 with the same format as the expected output.}
+
+\item{counties}{A vector of counties contained in your data. If \code{NULL}, all counties are pulled.
+Useful for smaller predictions where only a few counties are considered. Must be zero padded.}
 }
 \value{
 Output will be an object of class \code{list}, indexed by state names. It will 
@@ -49,16 +59,19 @@ Output will be an object of class \code{list}, indexed by state names. It will
 \code{census_geo_api} retrieves U.S. Census geographic data for a given state.
 }
 \details{
-This function allows users to download U.S. Census 2010 geographic data, 
+This function allows users to download U.S. Census geographic data (2010 or 2020), 
 at either the county, tract, block, or place level, for a particular state.
 }
 \examples{
 \dontshow{data(voters)}
 \dontrun{census_geo_api(key = "...", states = c("NJ", "DE"), geo = "block")}
 \dontrun{census_geo_api(key = "...", states = "FL", geo = "tract", age = TRUE, sex = TRUE)}
+\dontrun{census_geo_api(key = "...", states = "MA", geo = "place", age = FALSE, sex = FALSE,
+ year = "2020")}
 
 }
 \references{
 Relies on get_census_api, get_census_api_2, and vec_to_chunk functions authored by Nicholas Nagle, 
 available \href{https://rstudio-pubs-static.s3.amazonaws.com/19337_2e7f827190514c569ea136db788ce850.html}{here}.
 }
+\keyword{internal}

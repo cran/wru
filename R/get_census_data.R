@@ -15,21 +15,33 @@
 #'  sex or not. If \code{FALSE} (default), function will return Pr(Geolocation | Race). 
 #'  If \code{TRUE}, function will return Pr(Geolocation, Sex | Race). 
 #'  If \code{\var{age}} is also \code{TRUE}, function will return Pr(Geolocation, Age, Sex | Race).
+#' @param year A character object specifying the year of U.S. Census data to be downloaded.
+#'  Use \code{"2010"}, or \code{"2020"}. Default is \code{"2010"}.
+#'  Warning: 2020 U.S. Census data is downloaded only when \code{\var{age}} and 
+#'  \code{\var{sex}} are both \code{FALSE}.
 #' @param census.geo An optional character vector specifying what level of 
 #' geography to use to merge in U.S. Census 2010 geographic data. Currently
 #' \code{"county"}, \code{"tract"}, \code{"block"}, and \code{"place"} are supported.
 #' @param retry The number of retries at the census website if network interruption occurs.
+#' @param county.list A named list of character vectors of counties present in your \var{voter.file}, per state. 
 #' @return Output will be an object of class \code{list} indexed by state. 
 #' Output will contain a subset of the following elements: 
 #' \code{state}, \code{age}, \code{sex}, 
-#' \code{county}, \code{tract}, \code{block}, and \code{place}.
+#' \code{county}, \code{tract}, \code{block_group}, \code{block}, and \code{place}.
 #' 
 #' @export
 #'
-#' @examples \dontrun{get_census_data(key = "...", states = c("NJ", "NY"), age = TRUE, sex = FALSE)}
-get_census_data <- function(key, states, age = FALSE, sex = FALSE, census.geo = "block", retry = 0) {
+#' @examples 
+#' \dontrun{get_census_data(key = "...", states = c("NJ", "NY"), age = TRUE, sex = FALSE)}
+#' \dontrun{get_census_data(key = "...", states = "MN", age = FALSE, sex = FALSE, year = "2020")}
+get_census_data <- function(key = NULL, states, age = FALSE, sex = FALSE, year = "2010", census.geo = "block", retry = 3, county.list = NULL) {
   
-  if (missing(key)) {
+  if (is.null(key)) {
+    # Matches tidycensus name for env var
+    key <- Sys.getenv("CENSUS_API_KEY")
+  }
+  
+  if (missing(key) | key == "") {
     stop('Must enter valid Census API key, which can be requested at https://api.census.gov/data/key_signup.html.')
   }
   
@@ -37,21 +49,28 @@ get_census_data <- function(key, states, age = FALSE, sex = FALSE, census.geo = 
   
   CensusObj <- NULL
   for (s in states) {
-    CensusObj[[s]] <- list(state = s, age = age, sex = sex)
+    CensusObj[[s]] <- list(state = s, age = age, sex = sex, year = year)
     if (census.geo == "place") {
-      place <- census_geo_api(key, s, geo = "place", age, sex, retry)
+      place <- census_geo_api(key, s, geo = "place", age, sex, year, retry)
       CensusObj[[s]]$place <- place
     }
     if (census.geo == "block") {
-      block <- census_geo_api(key, s, geo = "block", age, sex, retry)
+      block <- census_geo_api(key, s, geo = "block", age, sex, year, retry, counties = county.list[[s]])
       CensusObj[[s]]$block <- block
     }
-    if ((census.geo == "block") || (census.geo == "tract")) {
-      tract <- census_geo_api(key, s, geo = "tract", age, sex, retry)
+    
+    if (census.geo == "block_group") {
+      block_group <- census_geo_api(key, s, geo = "block_group", age, sex, year, retry, counties = county.list[[s]])
+      CensusObj[[s]]$block_group <- block_group
+    }
+    
+    if ((census.geo == "block") || (census.geo == "tract") || (census.geo == "block_group")) {
+      tract <- census_geo_api(key, s, geo = "tract", age, sex, year, retry, counties = county.list[[s]])
       CensusObj[[s]]$tract <- tract
     }
-    if ((census.geo == "block") || (census.geo == "tract") || (census.geo == "county")) {
-      county <- census_geo_api(key, s, geo = "county", age, sex, retry)
+
+    if ((census.geo == "block") || (census.geo == "tract") || (census.geo == "county") || (census.geo == "block_group")) {
+      county <- census_geo_api(key, s, geo = "county", age, sex, year, retry)
       CensusObj[[s]]$county <- county
     }
   }
