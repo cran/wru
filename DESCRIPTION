@@ -1,6 +1,6 @@
 Package: wru
-Version: 1.0.0
-Date: 2022-06-17
+Version: 1.0.1
+Date: 2022-10-21
 Title: Who are You? Bayesian Prediction of Racial Category Using
         Surname, First Name, Middle Name, and Geolocation
 Authors@R: c(
@@ -19,18 +19,19 @@ Description: Predicts individual race/ethnicity using surname, first name, middl
 URL: https://github.com/kosukeimai/wru
 BugReports: https://github.com/kosukeimai/wru/issues
 Depends: R (>= 4.1.0), utils
-Imports: dplyr, future, furrr, purrr, Rcpp, piggyback, PL94171
+Imports: dplyr, future, furrr, purrr, Rcpp, piggyback (>= 0.1.4),
+        PL94171
 Suggests: testthat (>= 3.0.0), covr
 LinkingTo: Rcpp, RcppArmadillo
 LazyLoad: yes
 LazyData: yes
 LazyDataCompression: xz
 License: GPL (>= 3)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Encoding: UTF-8
 Config/testthat/edition: 3
 NeedsCompilation: yes
-Packaged: 2022-06-21 03:42:02 UTC; beb
+Packaged: 2022-10-21 17:14:25 UTC; beb
 Author: Kabir Khanna [aut],
   Brandon Bertelsen [aut, cre],
   Santiago Olivella [aut],
@@ -38,4 +39,4 @@ Author: Kabir Khanna [aut],
   Kosuke Imai [aut]
 Maintainer: Brandon Bertelsen <brandon@bertelsen.ca>
 Repository: CRAN
-Date/Publication: 2022-06-21 13:50:02 UTC
+Date/Publication: 2022-10-21 17:30:02 UTC

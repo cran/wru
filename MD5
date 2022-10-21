@@ -1,8 +1,8 @@
-4add57b5a0075214d152ac909aaaf5e5 *DESCRIPTION
+d0721441217c09eb08d28566819703da *DESCRIPTION
 73a5f8535a78e71385d0da7aaf42a735 *NAMESPACE
 0f4a7b1eab0281b43b59ad36c3001a15 *R/RcppExports.R
 5a1cc273666add5c7f7d9b62c6f85250 *R/census_data_preflight.R
-030021c2b21bbe3efa9632ed920dbd29 *R/census_geo_api.R
+87bc81f06db3155fc1ab2b28265e1fbd *R/census_geo_api.R
 37bb9e16f851afba6e12b63e3ce319d4 *R/census_helper.R
 79767428f8ddd2bfa00c0146ca889967 *R/census_helper_v2.R
 dbcdc6b73c2312420a8764b3b02c3ed6 *R/format_legacy_data.R
@@ -12,8 +12,8 @@ bdebdbdccbe01c0a32c883aa86dfa9b5 *R/get_census_api_2.R
 c2962985576e038ae7d1943b42420878 *R/merge_names.R
 37a2be351996108f217df611cdd944c9 *R/merge_surnames.R
 d2a5136ab37b53a5e2efa15cbce502b7 *R/name_preproc.R
-129449c18878486e3b9ddd389a39b0c3 *R/predict_race.R
-353bdf150d2e47b53755db54918dd581 *R/race_prediction_funs.R
+282a49c434a12813a382eae3d4b30ec4 *R/predict_race.R
+e33e050b7129c26b6b42e69fe7d92e08 *R/race_prediction_funs.R
 0e2710a5cc2ff350664b07b3219a8196 *R/surnames2000.R
 6571efdd224677cf26a4bdceae83a42b *R/surnames2010.R
 dddc9ff745495242f099db379574e310 *R/sysdata.rda
@@ -53,4 +53,4 @@ bf2e891dbbc24e63916a3c429cb0fb87 *src/sample_me.h
 293f858e20db561c511a7aaa03eaea1e *tests/testthat.R
 df4d81c110b59adb56fe625ad9d102c4 *tests/testthat/data/census_test_nj_block_2010.rds
 e320a952ca6bc003a8807d3cb849fafd *tests/testthat/test-get_census_data.R
-0cf21df5497e3be8d99a2653e49dceb4 *tests/testthat/test-predict_race.R
+28d11a616830ce4f2267a4b0027cb611 *tests/testthat/test-predict_race.R
