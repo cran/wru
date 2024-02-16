@@ -27,10 +27,6 @@
 #'  Default is \code{TRUE}.
 #' @param surname.only A \code{TRUE}/\code{FALSE} object. If \code{TRUE}, race predictions will
 #'  only use surname data and calculate Pr(Race | Surname). Default is \code{FALSE}.
-#' @param surname.year A number to specify the year of the census surname statistics.
-#' These surname statistics is stored in the data, and will be automatically loaded.
-#' The default value is \code{2010}, which means the surname statistics from the
-#' 2010 census will be used. Currently, the other available choices are \code{2000} and \code{2020}.
 #' @param census.geo An optional character vector specifying what level of
 #' geography to use to merge in U.S. Census geographic data. Currently
 #' \code{"county"}, \code{"tract"}, \code{"block_group"}, \code{"block"}, and \code{"place"} 
@@ -44,11 +40,17 @@
 #' must have columns named \code{county}, \code{tract}, and \code{block}.
 #' If \code{\var{census.geo} = "place"}, then \code{\var{voter.file}}
 #' must have column named \code{place}.
+#' If `census.geo = "zcta"`, then `voter.file` must have column named `zcta`.
 #' Specifying \code{\var{census.geo}} will call \code{census_helper} function
 #' to merge Census geographic data at specified level of geography.
-#' @param census.key A character object specifying user's Census API
-#'  key. Required if \code{\var{census.geo}} is specified, because
-#'  a valid Census API key is required to download Census geographic data.
+#' 
+#' @param census.key A character object specifying user's Census API key.
+#'   Required if `census.geo` is specified, because a valid Census API key is
+#'   required to download Census geographic data.
+#'   
+#'   If [`NULL`], the default, attempts to find a census key stored in an
+#'   [environment variable][Sys.getenv] named `CENSUS_API_KEY`.
+#'   
 #' @param census.data A list indexed by two-letter state abbreviations,
 #' which contains pre-saved Census geographic data.
 #' Can be generated using \code{get_census_data} function.
@@ -64,7 +66,7 @@
 #' If \code{TRUE}, \code{\var{voter.file}} should include a numerical variable \code{\var{sex}},
 #' where \code{\var{sex}} is coded as 0 for males and 1 for females.
 #' @param year An optional character vector specifying the year of U.S. Census geographic
-#' data to be downloaded. Use \code{"2010"}, or \code{"2020"}. Default is \code{"2010"}.
+#' data to be downloaded. Use \code{"2010"}, or \code{"2020"}. Default is \code{"2020"}.
 #' @param party An optional character object specifying party registration field
 #' in \code{\var{voter.file}}, e.g., \code{\var{party} = "PartyReg"}.
 #' If specified, race/ethnicity predictions will be conditioned
@@ -73,6 +75,9 @@
 #' it should be coded as 1 for Democrat, 2 for Republican, and 0 for Other.
 #' @param retry The number of retries at the census website if network interruption occurs.
 #' @param impute.missing Logical, defaults to TRUE. Should missing be imputed?
+#' @param skip_bad_geos Logical. Option to have the function skip any geolocations that are not present 
+#' in the census data, returning a partial data set. Default is set to \code{FALSE}, in which case it
+#' will break and provide error message with a list of offending geolocations.
 #' @param use.counties A logical, defaulting to FALSE. Should census data be filtered by counties 
 #' available in \var{census.data}?
 #' @param model Character string, either "BISG" (default) or "fBISG" (for error-correction, 
@@ -88,12 +93,12 @@
 #' Must be an integer vector, with 1=white, 2=black, 3=hispanic, 4=asian, and 
 #' 5=other. Defaults to values obtained using \code{model="BISG_surname"}.
 #' @param control List of control arguments only used when \code{model="fBISG"}, including
-#' \itemize{
-#'  \item{iter}{ Number of MCMC iterations. Defaults to 1000.}
-#'  \item{burnin}{ Number of iterations discarded as burnin. Defaults to half of \code{iter}.}
-#'  \item{verbose}{ Print progress information. Defaults to \code{TRUE}.}
-#'  \item{me.correct}{ Boolean. Should the model correcting measurement error for \code{races|geo}? Defaults to \code{TRUE}.}
-#'  \item{seed}{ RNG seed. If \code{NULL}, a seed is generated and returned as an attribute for reproducibility.}
+#' \describe{
+#'   \item{iter}{Number of MCMC iterations. Defaults to 1000.}
+#'   \item{burnin}{Number of iterations discarded as burnin. Defaults to half of \code{iter}.}
+#'   \item{verbose}{Print progress information. Defaults to \code{TRUE}.}
+#'   \item{me.correct}{Boolean. Should the model correct measurement error for \code{races|geo}? Defaults to \code{TRUE}.}
+#'   \item{seed}{RNG seed. If \code{NULL}, a seed is generated and returned as an attribute for reproducibility.}
 #' }
 #'
 #' @return Output will be an object of class \code{data.frame}. It will
@@ -110,36 +115,54 @@
 #' #' data(voters)
 #' try(predict_race(voter.file = voters, surname.only = TRUE))
 #' \dontrun{
-#' try(predict_race(voter.file = voters, census.geo = "tract", census.key = "..."))
+#' try(predict_race(voter.file = voters, census.geo = "tract"))
 #' }
 #' \dontrun{
 #' try(predict_race(
-#'   voter.file = voters, census.geo = "place", census.key = "...", year = "2020"))
+#'   voter.file = voters, census.geo = "place", year = "2020"))
 #' }
 #' \dontrun{
-#' CensusObj <- try(get_census_data("...", state = c("NY", "DC", "NJ")))
+#' CensusObj <- try(get_census_data(state = c("NY", "DC", "NJ")))
 #' try(predict_race(
 #'   voter.file = voters, census.geo = "tract", census.data = CensusObj, party = "PID")
 #'   )
 #' }
 #' \dontrun{
-#' CensusObj2 <- try(get_census_data(key = "...", state = c("NY", "DC", "NJ"), age = T, sex = T))
+#' CensusObj2 <- try(get_census_data(state = c("NY", "DC", "NJ"), age = T, sex = T))
 #' try(predict_race(
 #'   voter.file = voters, census.geo = "tract", census.data = CensusObj2, age = T, sex = T))
 #' }
 #' \dontrun{
-#' CensusObj3 <- try(get_census_data(key = "...", state = c("NY", "DC", "NJ"), census.geo = "place"))
+#' CensusObj3 <- try(get_census_data(state = c("NY", "DC", "NJ"), census.geo = "place"))
 #' try(predict_race(voter.file = voters, census.geo = "place", census.data = CensusObj3))
 #' }
 #' }
 
 #' @export
 
-predict_race <- function(voter.file, census.surname = TRUE, surname.only = FALSE,
-                         surname.year = 2010, census.geo, census.key = NULL, census.data = NULL, age = FALSE,
-                         sex = FALSE, year = "2010", party = NULL, retry = 3, impute.missing = TRUE,
-                         use.counties = FALSE, model = "BISG", race.init = NULL, name.dictionaries = NULL,
-                         names.to.use = "surname", control = NULL) {
+predict_race <- function(
+    voter.file,
+    census.surname = TRUE,
+    surname.only = FALSE,
+    census.geo = c("tract", "block", "block_group", "county", "place", "zcta"),
+    census.key = Sys.getenv("CENSUS_API_KEY"),
+    census.data = NULL,
+    age = FALSE,
+    sex = FALSE,
+    year = "2020",
+    party = NULL,
+    retry = 3,
+    impute.missing = TRUE,
+    skip_bad_geos = FALSE,
+    use.counties = FALSE,
+    model = "BISG",
+    race.init = NULL,
+    name.dictionaries = NULL,
+    names.to.use = "surname",
+    control = NULL
+) {
+  
+  message("Predicting race for ", year)
   
   ## Check model type
   if (!(model %in% c("BISG", "fBISG"))) {
@@ -160,6 +183,8 @@ predict_race <- function(voter.file, census.surname = TRUE, surname.only = FALSE
     )
   }
   
+  census.geo <- tolower(census.geo)
+  census.geo <- rlang::arg_match(census.geo)
   
   # block_group is missing, pull from block
   if((surname.only == FALSE) && !(missing(census.geo)) && (census.geo == "block_group") && !("block_group" %in% names(voter.file))) {
@@ -169,21 +194,10 @@ predict_race <- function(voter.file, census.surname = TRUE, surname.only = FALSE
   # Adjust voter.file with caseid for ordering at the end
   voter.file$caseid <- 1:nrow(voter.file)
   
-  if((surname.only==FALSE) && is.null(census.key) && is.null(census.data)) {
-    k <- Sys.getenv("CENSUS_API_KEY")
-    
-    if(k == "") 
-      stop(
-        "Please provide a valid Census API key using census.key option.",
-        " Or set CENSUS_API_KEY in your .Renviron or .Rprofile"
-      )
-    
-    census.key <- k
-  }
-  
-  if(surname.only==FALSE && is.null(census.data)) {
+  if (surname.only == FALSE && is.null(census.data)) {
     # Otherwise predict_race_new and predict_race_me will both
     # attempt to pull census_data
+    census.key <- validate_key(census.key)
     voter.file$state <- toupper(voter.file$state)
     states <- unique(voter.file$state)
     county.list <- split(voter.file$county, voter.file$state)
@@ -210,6 +224,7 @@ predict_race <- function(voter.file, census.surname = TRUE, surname.only = FALSE
                               census.data = census.data,
                               retry = retry,
                               impute.missing = impute.missing,
+                              skip_bad_geos = skip_bad_geos,
                               census.surname = census.surname,
                               use.counties = use.counties)
   } else {
@@ -227,19 +242,24 @@ predict_race <- function(voter.file, census.surname = TRUE, surname.only = FALSE
       if(ctrl$verbose){
         message("Using `predict_race` to obtain initial race prediction priors with BISG model")
       }
-      race.init <-  predict_race_new(voter.file = voter.file,
-                                     names.to.use = names.to.use,
-                                     year = year,
-                                     age = age, sex = sex, # not implemented, default to F
-                                     census.geo = census.geo,
-                                     census.key = census.key,
-                                     name.dictionaries = name.dictionaries,
-                                     surname.only=surname.only,
-                                     census.data = census.data,
-                                     retry = retry,
-                                     impute.missing = TRUE,
-                                     census.surname = census.surname,
-                                     use.counties = use.counties)
+
+      race.init <-  predict_race(voter.file = voter.file,
+                                 names.to.use = names.to.use,
+                                 year = year,
+                                 age = age, sex = sex, # not implemented, default to F
+                                 census.geo = census.geo,
+                                 census.key = census.key,
+                                 name.dictionaries = name.dictionaries,
+                                 surname.only=surname.only,
+                                 census.data = census.data,
+                                 retry = retry,
+                                 impute.missing = TRUE,
+                                 skip_bad_geos = skip_bad_geos,
+                                 census.surname = census.surname,
+                                 use.counties = use.counties,
+                                 model = "BISG",
+                                 control = list(verbose=FALSE))
+
       race.init <- max.col(
         race.init[, paste0("pred.", c("whi", "bla", "his", "asi", "oth"))],
         ties.method = "random"
@@ -265,7 +285,10 @@ predict_race <- function(voter.file, census.surname = TRUE, surname.only = FALSE
                              use.counties = use.counties, race.init = race.init,
                              ctrl = ctrl)
   }
-  preds[order(preds$caseid),setdiff(names(preds), "caseid")]
+  seed_attr <- attr(preds, "RNGseed")
+  preds <- preds[order(preds$caseid),setdiff(names(preds), "caseid")]
+  attr(preds, "RNGseed") <- seed_attr
+  preds
 }
 
 

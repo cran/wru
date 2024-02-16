@@ -4,17 +4,27 @@
 \alias{get_census_api}
 \title{Census API function.}
 \usage{
-get_census_api(data_url, key, var.names, region, retry = 0)
+get_census_api(
+  data_url,
+  key = Sys.getenv("CENSUS_API_KEY"),
+  var.names,
+  region,
+  retry = 0
+)
 }
 \arguments{
-\item{data_url}{URL root of the API, including the question mark,
-e.g., \code{"https://api.census.gov/data/2010/dec/dec/sf1?"}.}
+\item{data_url}{URL root of the API,
+e.g., \code{"https://api.census.gov/data/2020/dec/pl"}.}
 
-\item{key}{A required character object containing user's Census API key,
-which can be requested \href{https://api.census.gov/data/key_signup.html}{here}.}
+\item{key}{A character string containing a valid Census API key,
+which can be requested from the
+\href{https://api.census.gov/data/key_signup.html}{U.S. Census API key signup page}.
+
+By default, attempts to find a census key stored in an
+\link[=Sys.getenv]{environment variable} named \code{CENSUS_API_KEY}.}
 
 \item{var.names}{A character vector of variables to get,
-e.g., \code{c("P005003","P005004","P005005", "P005006")}.
+e.g., \code{c("P2_005N", "P2_006N", "P2_007N", "P2_008N")}.
 If there are more than 50 variables, then function will automatically
 split variables into separate queries.}
 
@@ -26,7 +36,7 @@ e.g., \code{"for=block:1213&in=state:47+county:015+tract:*"}.}
 }
 \value{
 If successful, output will be an object of class \code{data.frame}.
- If unsuccessful, function prints the URL query that caused the error.
+If unsuccessful, function prints the URL query that caused the error.
 }
 \description{
 \code{get_census_api} obtains U.S. Census data via the public API.
@@ -38,8 +48,8 @@ can specify the variables and region(s) for which to obtain data.
 \examples{
 \dontrun{
 get_census_api(
-  data_url = "https://api.census.gov/data/2010/dec/sf1?", key = "...",
-  var.names = c("P005003", "P005004", "P005005", "P005006"), region = "for=county:*&in=state:34"
+  data_url = "https://api.census.gov/data/2020/dec/pl",
+  var.names = c("P2_005N", "P2_006N", "P2_007N", "P2_008N"), region = "for=county:*&in=state:34"
 )
 }
 
