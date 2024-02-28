@@ -1,4 +1,4 @@
-7c2c00a9d0a05542c0badd20fa35a590 *DESCRIPTION
+d6bf29afb2323845e6b4f74965f63ec3 *DESCRIPTION
 f0c18e4cdab960cfa519d4bbef330356 *NAMESPACE
 17357888b0689268e989fe8bf2271611 *R/RcppExports.R
 c0a83119516a33ea9cae762b99fb3bac *R/census_data_preflight.R
@@ -11,7 +11,7 @@ dbcdc6b73c2312420a8764b3b02c3ed6 *R/format_legacy_data.R
 d9e2a1165cf53638ef10f947af35f528 *R/get_census_api.R
 44d879a69fd5270da641841061a237cc *R/get_census_api_2.R
 6143e89a0188e3a923d6cf70f95be6ed *R/get_census_data.R
-e3ca802ea00f30111cd460cab0cc503c *R/merge_names.R
+b4aa4549d75f5e54dc28fda154020c8f *R/merge_names.R
 30a30b46ffb95fbe94452098f731c028 *R/merge_surnames.R
 d2a5136ab37b53a5e2efa15cbce502b7 *R/name_preproc.R
 a2ad768e72c4dfd6ce7058f284974c12 *R/predict_race.R

@@ -1,8 +1,8 @@
 Package: wru
 Title: Who are You? Bayesian Prediction of Racial Category Using
         Surname, First Name, Middle Name, and Geolocation
-Version: 3.0.0
-Date: 2024-02-14
+Version: 3.0.1
+Date: 2024-02-27
 Authors@R: c(
     person("Kabir", "Khanna", , "kabirkhanna@gmail.com", role = "aut"),
     person("Brandon", "Bertelsen", , "brandon@bertelsen.ca", role = c("aut", "cre")),
@@ -40,7 +40,7 @@ LazyDataCompression: xz
 LazyLoad: yes
 RoxygenNote: 7.2.3
 NeedsCompilation: yes
-Packaged: 2024-02-16 02:03:14 UTC; beb
+Packaged: 2024-02-28 02:21:48 UTC; beb
 Author: Kabir Khanna [aut],
   Brandon Bertelsen [aut, cre],
   Santiago Olivella [aut],
@@ -49,4 +49,4 @@ Author: Kabir Khanna [aut],
   Kosuke Imai [aut]
 Maintainer: Brandon Bertelsen <brandon@bertelsen.ca>
 Repository: CRAN
-Date/Publication: 2024-02-16 17:50:03 UTC
+Date/Publication: 2024-02-28 04:20:02 UTC
